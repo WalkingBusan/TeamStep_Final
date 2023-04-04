@@ -86,11 +86,14 @@ class WritingActivity : AppCompatActivity() {
 
             })
             binding.btnSave.setOnClickListener{
+                // 제목 / 내용을 텍스트로 입력한 정보를 가져온다.
                 boardTitle = binding.titleEt.text.toString()
                 boardContent = binding.contentText.text.toString()
 
                 var board = Board(0, boardTitle, boardContent,username)
+                // 네트워크 서비스를 들고온다 .
                 val networkService = (applicationContext as MyApplication).networkService
+                // 위의 보드타이틀 / 보트 컨텐츠를 보드라는 모델 객체에 넣어줌
                 val boardInsetCall = networkService.doInsertBoard(board)
                 boardInsetCall.enqueue(object: retrofit2.Callback<Board>{
                     override fun onResponse(call: Call<Board>, response: Response<Board>){
