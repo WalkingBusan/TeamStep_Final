@@ -34,8 +34,7 @@ class ShowFourCutActivity : AppCompatActivity() {
         }
         Log.d("park","resultUri에 리스트로 값이 담김? $resultUri")
         binding.listBtn.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            finish()
         }
 
     }

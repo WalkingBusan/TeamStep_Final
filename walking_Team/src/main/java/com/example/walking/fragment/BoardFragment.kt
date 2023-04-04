@@ -76,7 +76,7 @@ class BoardFragment : Fragment() {
                     boardListCall.enqueue(object: Callback<BoardListModel>{
                         override fun onResponse(call: Call<BoardListModel>, response: Response<BoardListModel>) {
                             val boardList = response.body()
-                            Log.d("park","boardList : $boardList")
+                            Log.d("song","boardList : $boardList")
                             adapter = BoardListAdapter(this@BoardFragment, boardList?.boards,nickname, username)
                             adapter.notifyDataSetChanged()
 
