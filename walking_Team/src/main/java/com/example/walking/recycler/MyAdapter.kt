@@ -1,8 +1,10 @@
 package com.example.walking.recycler
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -68,6 +70,12 @@ class MyAdapter(val context: Context, val datas: List<Item>?): RecyclerView.Adap
         val user = datas?.get(position)
         binding.username.text = user?.MAIN_TITLE
         binding.maincontent.text = user?.ITEMCNTNTS
+
+        binding.mapbtn.setOnClickListener{
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.co.kr/maps/search/${user?.LAT}, ${user?.LNG}"))
+
+            context.startActivity(intent)
+        }
 
         val like = datas?.get(position)
 //        binding.likebtn.text = like?.UC_SEQ.toString()

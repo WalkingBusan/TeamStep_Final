@@ -1,6 +1,8 @@
 package com.example.walking
 
 import android.annotation.SuppressLint
+import android.app.ProgressDialog.show
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -13,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.cardview.widget.CardView
@@ -50,9 +53,10 @@ class ChatActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
     private var tripId: String? = null
     private lateinit var comments:ArrayList<Comment>
     lateinit var chatAdapt:ChatListAdapter
-    var username: String = ""
+    var username: String? = null
     var nickname: String? = null
     var admin: String? = null
+    var meeting: Meeting? = null
 
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +66,8 @@ class ChatActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         binding = ActivityChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.optionBtn.setOnClickListener { showPopup(binding.optionBtn) }
+
+
 
 
         binding.btnmenu.setOnClickListener{
@@ -79,40 +84,37 @@ class ChatActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
         val intent = intent
         var title = intent.getStringExtra("title")
         nickname = intent.getStringExtra("nickname")
-
+        username = intent.getStringExtra("username")
         Log.d("chc","$title===================")
         val networkService = (applicationContext as MyApplication).networkService
         val oneMeetingCall = networkService.doGetOneMeeting(title)
         oneMeetingCall.enqueue(object: Callback<Meeting> {
             override fun onResponse(call: Call<Meeting>, response: Response<Meeting>) {
-                var meeting = response.body()
+                meeting = response.body()
                 admin = meeting?.email
-//                var check = meeting?.start_date?:0
-//                Log.d("chc", "${check}=========================")
-//                var dates = arrayListOf<Long>()
-//
-//                do {
-//                    dates.add(check)
-//
-//                    check += 86400000L
-//
-//                } while( check <= (meeting?.end_date?:0))
+
+                Log.d("ttttt", "${username} == ${admin}")
+                if(admin == username){
+                    binding.optionBtn.setOnClickListener { showPopup(binding.optionBtn) }}
+                else{
+                    binding.optionBtn.setOnClickListener{ showPopup2(binding.optionBtn)}
+                }
+
+
+
 
                 val layoutManager = LinearLayoutManager(this@ChatActivity)
-
-//                layoutManager.orientation = LinearLayoutManager.HORIZONTAL
-//                binding.recyclerView.layoutManager = layoutManager
-//                binding.recyclerView.adapter = DateAdapter(dates)
 
                 binding.startDate.text = meeting?.start_date
                 binding.endDate.text = " ~ "+meeting?.end_date
                 binding.meetingTitle.text = meeting?.meeting_title
                 binding.meetingContent.text = meeting?.meeting_content
                 binding.meetingPlace.text = meeting?.meeting_place_name
+                binding.meetingid.text = meeting?.meeting_id.toString()
                 Glide.with(this@ChatActivity)
                     .asBitmap()
                     .load(meeting?.meeting_place_imgurl)
-                    .into(object : CustomTarget<Bitmap>(200, 200) {
+                    .into(object : CustomTarget<Bitmap>(500, 200) {
                         override fun onResourceReady(
                             resource: Bitmap,
                             transition: Transition<in Bitmap>?
@@ -181,8 +183,6 @@ class ChatActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
 
 
 
-
-
         //채팅
 
         recyclerView = findViewById(R.id.chatListRecyclerView)
@@ -196,6 +196,7 @@ class ChatActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
 //        memberList = intent.getStringExtra("member")?.split(",") //배열형으로 출력.[a1, a2, a3]
 
         val chatTitle = intent.getStringExtra("title")
+
 
 
 
@@ -223,8 +224,8 @@ class ChatActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
 //                        }
                     }
                     override fun onCancelled(error: DatabaseError) {
-                }
-        })
+                    }
+                })
         }
         getMessageList() //List 호출
 
@@ -334,12 +335,13 @@ class ChatActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
                 holder.card.visibility = View.VISIBLE
 
                 val inetworkService =(this@ChatActivity?.applicationContext as MyApplication).networkService
-                var oneUserCall = inetworkService.doGetOneUser(comments[position].username)
+                Log.d("cccccc", "${comments[position].username}")
+                var oneUserCall = inetworkService.doGetOneUserByNickname(comments[position].username)
 
                 oneUserCall.enqueue(object: Callback<User> {
                     override fun onResponse(call: Call<User>, response: Response<User>) {
                         val profile_id = response.body()?.profile_id.toString()
-
+                        Log.d("ccccc", "profiles/${profile_id}.jpg")
 
                         val imgRef = MyApplication.storage.reference.child("profiles/${profile_id}.jpg")
                         imgRef.downloadUrl.addOnCompleteListener{ task ->
@@ -434,21 +436,100 @@ class ChatActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
 
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
-        when (item?.itemId) { // 메뉴 아이템에 따라 동작 다르게 하기
-            R.id.outMenu -> Toast.makeText(this, "채팅방을 나갔습니다.", Toast.LENGTH_SHORT).show()
-            R.id.updateMenu -> Toast.makeText(this, "채팅방을 수정합니다.", Toast.LENGTH_SHORT).show()
-            R.id.deleteMenu -> Toast.makeText(this, "채팅방을 삭제합니다.", Toast.LENGTH_SHORT).show()
-        }
 
+
+
+        when (item?.itemId) { // 메뉴 아이템에 따라 동작 다르게 하기
+
+
+            R.id.outMenu -> {
+                var dialog_listener = DialogInterface.OnClickListener { dialog, which ->
+                    val networkService = (applicationContext as MyApplication).networkService
+                    val deleteUserinmeetingCall = networkService.doDeleteUserinmeeting(username, binding.meetingid.text.toString().toInt())
+                    deleteUserinmeetingCall.enqueue(object: Callback<Int> {
+                        override fun onResponse(call: Call<Int>, response: Response<Int>) {
+                            Toast.makeText(this@ChatActivity, "모임을 나갔습니다.", Toast.LENGTH_SHORT)
+                            finish()
+                        }
+                        override fun onFailure(call: Call<Int>, t: Throwable) {
+                            Log.d("chatActivity", "실패")
+                        }
+                    })
+                }
+
+
+                AlertDialog.Builder(this@ChatActivity).run {
+                    setTitle("모임 탈퇴")
+                    setMessage("모임을 나가시겠습니까?")
+                    setPositiveButton("아니오", null)
+                    setNegativeButton("네", dialog_listener)
+                    show()
+                }
+            }
+            R.id.updateMenu -> {
+                val intent = Intent(this@ChatActivity, UpdateMeetingActivity::class.java)
+                intent.putExtra("meeting_id", meeting?.meeting_id)
+                intent.putExtra("meeting_title", meeting?.meeting_title)
+                intent.putExtra("meeting_content", meeting?.meeting_content)
+                intent.putExtra("meeting_place_name", meeting?.meeting_place_name)
+                intent.putExtra("meeting_place_imgurl", meeting?.meeting_place_imgurl)
+                intent.putExtra("meeting_place_spot", meeting?.meeting_place_spot)
+                intent.putExtra("start_date", meeting?.start_date)
+                intent.putExtra("end_date", meeting?.end_date)
+                startActivity(intent)
+            }
+            R.id.deleteMenu -> {
+                var dialog_listener = DialogInterface.OnClickListener { dialog, which ->
+                    val networkService = (applicationContext as MyApplication).networkService
+                    val deleteUserinmeetingCall = networkService.doDeleteMeeting(binding.meetingid.text.toString().toInt())
+                    deleteUserinmeetingCall.enqueue(object: Callback<Int> {
+                        override fun onResponse(call: Call<Int>, response: Response<Int>) {
+                            var mDatabase = FirebaseDatabase.getInstance();
+                            var dataRef = mDatabase.getReference("chatrooms").child(meeting?.meeting_title!!)
+                            dataRef.removeValue()
+
+                            Toast.makeText(this@ChatActivity, "채팅방을 삭제했습니다.", Toast.LENGTH_SHORT)
+                            finish()
+                        }
+                        override fun onFailure(call: Call<Int>, t: Throwable) {
+                            Log.d("chatActivity", "실패")
+                        }
+                    })
+                }
+
+
+                AlertDialog.Builder(this@ChatActivity).run {
+                    setTitle("채팅방 삭제")
+                    setMessage("채팅방을 삭제하시겠습니까?")
+                    setPositiveButton("아니오", null)
+                    setNegativeButton("네", dialog_listener)
+                    show()
+                }
+            }
+
+        }
         return item != null // 아이템이 null이 아닌 경우 true, null인 경우 false 리턴
     }
 
     private fun showPopup(v: View) {
         val popup = PopupMenu(this, v) // PopupMenu 객체 선언
+
+        popup.menuInflater.inflate(R.menu.chatadminmenu, popup.menu) // 메뉴 레이아웃 inflate
+        popup.setOnMenuItemClickListener(this)
+        popup.show() // 팝업 보여주기
+    }
+
+    private fun showPopup2(v: View) {
+        val popup = PopupMenu(this, v) // PopupMenu 객체 선언
+
+
+
         popup.menuInflater.inflate(R.menu.chatmenu, popup.menu) // 메뉴 레이아웃 inflate
         popup.setOnMenuItemClickListener(this)
         popup.show() // 팝업 보여주기
     }
+
+
 
 
 
