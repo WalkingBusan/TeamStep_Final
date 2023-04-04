@@ -50,5 +50,14 @@
     android:layout_height="wrap_content"
     android:text="등록"
     android:background="@color/black" />
-
+    <Button
+        android:id="@+id/listFourCut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="목록으로"
+        android:background="@color/black" />
+    <ImageView
+        android:id="@+id/imgPick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>

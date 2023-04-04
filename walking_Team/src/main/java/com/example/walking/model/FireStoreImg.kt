@@ -9,4 +9,5 @@ class FireStoreImg {
     var tag1: String? = null
     var tag2: String? = null
     var tag3: String? = null
+    var email: String? =  null
 }

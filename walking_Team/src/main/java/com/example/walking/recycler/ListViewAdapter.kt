@@ -41,8 +41,11 @@ class ListViewAdapter(val datas: MutableList<FireStoreImg>, val context: PhotoFr
             intent.putExtra("tag1",imgUri.tag1)
             intent.putExtra("tag2",imgUri.tag2)
             intent.putExtra("tag3",imgUri.tag3)
+            intent.putExtra("email",imgUri.email)
             context.startActivity(intent)
         }
+
+
     }
 
     override fun getItemCount(): Int {

@@ -14,11 +14,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.walking.AddFourCutActivity.Companion.chipList
 import com.example.walking.AddFourCutActivity.Companion.resultUri
 import com.example.walking.AddFourCutActivity.Companion.uriList
+import com.example.walking.LoginActivity.Companion.username
 import com.example.walking.databinding.ActivityAddFourCutBinding
 import com.example.walking.databinding.FragmentPhotoBinding
 import com.example.walking.recycler.ListViewAdapter
 import com.example.walking.recycler.MultiImageAdapter
 import com.google.android.material.chip.Chip
+import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,7 +35,7 @@ class AddFourCutActivity : AppCompatActivity() {
     }
     lateinit var binding:ActivityAddFourCutBinding
     lateinit var binding2: FragmentPhotoBinding
-
+    private val fireDatabase = FirebaseDatabase.getInstance().reference
     var recyclerView: RecyclerView? = null  // 이미지를 보여줄 리사이클러뷰
     var adapter: MultiImageAdapter? = null // 리사이클러뷰에 적용시킬 어댑터
     var adapter2: ListViewAdapter? = null
@@ -48,6 +50,11 @@ class AddFourCutActivity : AppCompatActivity() {
         }
         binding.addFourCut.setOnClickListener {
             addFirebase()
+            Log.d("park","src : ${binding.imgPick}")
+        }
+
+        binding.listFourCut.setOnClickListener {
+            finish()
         }
 
     }
@@ -62,7 +69,7 @@ class AddFourCutActivity : AppCompatActivity() {
                     setOnCloseIconClickListener { binding.chipGroup.removeView(this)}
                 })
                 binding.hashtag.text.clear()
-                Log.d("park","키업 hashtag 리스트 : $chipList")
+                Log.d("park","키업 hasㅅhtag 리스트 : $chipList")
                 return true
 
             }
@@ -79,11 +86,12 @@ class AddFourCutActivity : AppCompatActivity() {
             val chip: Chip = binding.chipGroup.getChildAt(i - 1) as Chip
             chipList.add(chip.text.toString())
         }
-        if (chipList.size == 0  || chipList.size > 3) {
-            Toast.makeText(this,"해쉬태그를 확인해주세요(최대 3개)",Toast.LENGTH_SHORT).show()
-            chipList.clear()
+        if(chipList.size == 0 || chipList.size > 3) {
+            Toast.makeText(this,"해쉬태그 확인 부탁드려요(최대 3개)", Toast.LENGTH_SHORT).show()
+            Log.d("park","username : $username")
         }
         else {
+
             Log.d("park","등록 hashtag 리스트 : $chipList")
             for (photoUri in uriList) {
                 val splitUri = "${timeStamp}${photoUri.toString().substring(151)}"
@@ -100,7 +108,8 @@ class AddFourCutActivity : AppCompatActivity() {
                                 "img2" to resultUri[1],
                                 "img3" to resultUri[2],
                                 "img4" to resultUri[3],
-                                "tag1" to chipList[0]
+                                "tag1" to chipList[0],
+                                "email" to username
                             )
                             Log.d("park","data의 값 : $data")
                             db?.collection("testFourCut")?.add(data)?.addOnSuccessListener {
@@ -116,7 +125,8 @@ class AddFourCutActivity : AppCompatActivity() {
                                 "img3" to resultUri[2],
                                 "img4" to resultUri[3],
                                 "tag1" to chipList[0],
-                                "tag2" to chipList[1]
+                                "tag2" to chipList[1],
+                                "email" to username
                             )
                             Log.d("park","data의 값 : $data")
                             db?.collection("testFourCut")?.add(data)?.addOnSuccessListener {
@@ -133,7 +143,8 @@ class AddFourCutActivity : AppCompatActivity() {
                                 "img4" to resultUri[3],
                                 "tag1" to chipList[0],
                                 "tag2" to chipList[1],
-                                "tag3" to chipList[2]
+                                "tag3" to chipList[2],
+                                "email" to username
                             )
                             Log.d("park","data의 값 : $data")
                             db?.collection("testFourCut")?.add(data)?.addOnSuccessListener {
@@ -156,8 +167,8 @@ class AddFourCutActivity : AppCompatActivity() {
 
                     }
                 }
-            }
 
+            }
         }
 
 //        Log.d("park","resultUri[0] : ${resultUri.size}")
@@ -195,10 +206,12 @@ class AddFourCutActivity : AppCompatActivity() {
 
                     }
                     Log.d("park","이미지URI 리스트 $uriList")
-                    adapter = MultiImageAdapter(uriList, applicationContext)
+                    adapter = MultiImageAdapter(uriList, applicationContext,binding)
                     recyclerView = binding.addRecyclerView
                     recyclerView?.adapter = adapter
                     recyclerView?.layoutManager = LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,true)
+
+
                 }
 
             }

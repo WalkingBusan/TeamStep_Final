@@ -25,7 +25,9 @@ class LoginActivity : AppCompatActivity() {
     lateinit var binding : ActivityLoginBinding
     private val fireDatabase = FirebaseDatabase.getInstance().reference
     private  var TAG : String = "LoginActivity"
-
+    companion object {
+        var username: String? = null
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //view binding
@@ -52,7 +54,7 @@ class LoginActivity : AppCompatActivity() {
                         val auth = header.get("Authorization")
                         Log.d(TAG,"3===========auth.toString()의 값 "+auth.toString())
 
-                        val username = response.body()?.email.toString()
+                        username = response.body()?.email.toString()
                         val password = response.body()?.password.toString()
 
                         Log.d(TAG,"4============login=username======$username")

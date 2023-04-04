@@ -5,9 +5,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.walking.LoginActivity.Companion.username
 import com.example.walking.databinding.ActivityShowFourCutBinding
 import com.example.walking.recycler.ShowViewAdapter
 
@@ -36,7 +38,19 @@ class ShowFourCutActivity : AppCompatActivity() {
         binding.listBtn.setOnClickListener {
             finish()
         }
-
+        binding.delBtn.setOnClickListener {
+            intent.getStringExtra("docId")?.let { it1 ->
+                MyApplication.db.collection("testFourCut")
+                    .document(it1)
+                    .delete()
+                    .addOnSuccessListener {
+                        finish()
+                    }
+                    .addOnFailureListener {
+                        Log.d("park","delete exception : $it")
+                    }
+            }
+        }
     }
     override fun onStart() {
         super.onStart()
@@ -53,6 +67,7 @@ class ShowFourCutActivity : AppCompatActivity() {
         var tag1 = intent.getStringExtra("tag1")
         var tag2 = intent.getStringExtra("tag2")
         var tag3 = intent.getStringExtra("tag3")
+        var email = intent.getStringExtra("email")
         var count = 1
         val imgArray: MutableList<String?> = mutableListOf(img1,img2,img3,img4)
         val tagArray: MutableList<String?> = mutableListOf(tag1,tag2,tag3)
@@ -94,6 +109,12 @@ class ShowFourCutActivity : AppCompatActivity() {
             binding.showHashTag.text = "${tag1} , ${tag2} , ${tag3}"
         }
 
+        if (email == username) {
+            binding.delBtn.visibility = View.VISIBLE
+        }
+        else {
+            binding.delBtn.visibility = View.GONE
+        }
 //        MyApplication.db.collection("testFoutCut")
 //            .get()
 //            .addOnSuccessListener {result ->
@@ -113,4 +134,4 @@ class ShowFourCutActivity : AppCompatActivity() {
 //        adapter!!.notifyDataSetChanged()
     }
 
-    }
+}
