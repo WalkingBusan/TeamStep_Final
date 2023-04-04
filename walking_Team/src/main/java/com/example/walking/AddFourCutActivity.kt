@@ -62,7 +62,7 @@ class AddFourCutActivity : AppCompatActivity() {
                     setOnCloseIconClickListener { binding.chipGroup.removeView(this)}
                 })
                 binding.hashtag.text.clear()
-                Log.d("park","키업 hasㅅhtag 리스트 : $chipList")
+                Log.d("park","키업 hashtag 리스트 : $chipList")
                 return true
 
             }
@@ -79,8 +79,9 @@ class AddFourCutActivity : AppCompatActivity() {
             val chip: Chip = binding.chipGroup.getChildAt(i - 1) as Chip
             chipList.add(chip.text.toString())
         }
-        if (chipList.size == 0 ) {
-            Toast.makeText(this,"해쉬태그를 입력해주세요",Toast.LENGTH_SHORT).show()
+        if (chipList.size == 0  || chipList.size > 3) {
+            Toast.makeText(this,"해쉬태그를 확인해주세요(최대 3개)",Toast.LENGTH_SHORT).show()
+            chipList.clear()
         }
         else {
             Log.d("park","등록 hashtag 리스트 : $chipList")

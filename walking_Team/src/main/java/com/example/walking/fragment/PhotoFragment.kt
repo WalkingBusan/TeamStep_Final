@@ -15,6 +15,7 @@ import com.example.walking.MyApplication
 import com.example.walking.databinding.FragmentPhotoBinding
 import com.example.walking.model.FireStoreImg
 import com.example.walking.recycler.ListViewAdapter
+import com.google.firebase.firestore.Query
 
 class PhotoFragment : Fragment() {
     lateinit var binding: FragmentPhotoBinding
@@ -62,23 +63,24 @@ class PhotoFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        MyApplication.db.collection("testFourCut")
-            .get()
-            .addOnSuccessListener {result ->
-                val itemList: MutableList<FireStoreImg> = mutableListOf<FireStoreImg>()
-                for (document in result) {
-                    val item = document.toObject(FireStoreImg::class.java)
-                    item.docId = document.id
-                    item.img1 = document.get("img1") as String
-                    Log.d("park","document.id ${document.id}")
-                    Log.d("park","document.get : ${document.get("img1") as String}")
-                    itemList.add(item)
+        MyApplication.db.collection("testFourCut").orderBy("img1", Query.Direction.DESCENDING)
+            .addSnapshotListener { querySnapshot, firebaseFirestoreException ->
+                val itemList: MutableList<FireStoreImg> = mutableListOf()
+                itemList.clear()
+                for (item in querySnapshot!!.documents) {
+                    val item2 = item.toObject(FireStoreImg::class.java)
+                    item2?.docId = item.id
+                    item2?.img1 = item.get("img1") as String
+                    Log.d("park","document.id ${item.id}")
+                    Log.d("park","document.get : ${item.get("img1") as String}")
+                    itemList.add(item2!!)
                 }
 
                 adapter = context?.let {ListViewAdapter(itemList,this@PhotoFragment)}
                 binding.gridfragmentRecyclerview.layoutManager = GridLayoutManager(activity,3)
                 binding.gridfragmentRecyclerview.adapter = adapter
                 binding.gridfragmentRecyclerview
+                adapter!!.notifyDataSetChanged()
             }
     }
     private fun addFourCut() {
