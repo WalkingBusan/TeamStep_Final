@@ -61,12 +61,7 @@
                 android:layout_height="40dp"
                 android:background="@drawable/button_like"
                />
-            <ImageView
-                android:id="@+id/like_test"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/button_like"
-                />
+
             <Button
                 android:id="@+id/likefill"
                 android:layout_width="40dp"
@@ -75,15 +70,7 @@
                 android:visibility="gone"
                 />
 
-            <TextView
-                android:id="@+id/likeCount"
-                android:layout_width="130dp"
-                android:layout_height="40dp"
-                android:textSize="25sp"
-                android:textColor="@color/purple_500"
-                android:fontFamily="@font/cookierunblack"
-                tools:text="좋아요 0"
-                />
+
             <Button
                 android:id="@+id/mapbtn"
                 android:layout_width="45dp"

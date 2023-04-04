@@ -80,7 +80,7 @@ class MyAdapter(val context: Context, val datas: List<Item>?): RecyclerView.Adap
         val like = datas?.get(position)
 //        binding.likebtn.text = like?.UC_SEQ.toString()
 
-        binding.likeCount.text = "좋아요" + like?.UC_SEQ.toString()
+//        binding.likeCount.text = "좋아요" + like?.UC_SEQ.toString()
 
 //
 //        // 좋아요 이벤트

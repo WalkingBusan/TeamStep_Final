@@ -71,22 +71,22 @@ class LikeAdapter(var context : Context, val likes : MutableList<LikeDTO>) : Rec
         auth = Firebase.auth
         val loginUser = auth.currentUser?.displayName
 
-        // 유저 아이디
-        binding.username.text = likeDTOs[position].email
+//        // 유저 아이디
+//        binding.username.text = likeDTOs[position].email
+//
+//        // 좋아요 이벤트
+//        binding.likeTest.setOnClickListener { likeEvent(position) }
 
-        // 좋아요 이벤트
-        binding.likeTest.setOnClickListener { likeEvent(position) }
-
-        //좋아요 버튼 설정
-        if (likeDTOs[position].likes.containsKey(FirebaseAuth.getInstance().currentUser!!.uid)) {
-            binding.likeTest.setImageResource(R.drawable.like_fill)
-
-        } else {
-
-            binding.likeTest.setImageResource(R.drawable.like)
-        }
-        //좋아요 카운터 설정
-        binding.likeCount.text = "좋아요 " + likeDTOs[position].likeCount
+//        //좋아요 버튼 설정
+//        if (likeDTOs[position].likes.containsKey(FirebaseAuth.getInstance().currentUser!!.uid)) {
+//            binding.likeTest.setImageResource(R.drawable.like_fill)
+//
+//        } else {
+//
+//            binding.likeTest.setImageResource(R.drawable.like)
+//        }
+//        //좋아요 카운터 설정
+//        binding.likeCount.text = "좋아요 " + likeDTOs[position].likeCount
 
 //        binding.likeTest.setOnClickListener {
 //            val intent = Intent(LikeAdapter, MainFragment::class.java)

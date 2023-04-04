@@ -79,68 +79,72 @@ class AddFourCutActivity : AppCompatActivity() {
             val chip: Chip = binding.chipGroup.getChildAt(i - 1) as Chip
             chipList.add(chip.text.toString())
         }
-        Log.d("park","등록 hashtag 리스트 : $chipList")
-        for (photoUri in uriList) {
-            val splitUri = "${timeStamp}${photoUri.toString().substring(151)}"
-            val imgFileName = "IMAGE.png"
-            val storageRef = storage.reference.child("images")?.child("$splitUri$imgFileName")
-            storageRef?.putFile(photoUri)?.addOnSuccessListener {
-                Toast.makeText(applicationContext,"image upload",Toast.LENGTH_SHORT).show()
-                resultUri.add("$splitUri$imgFileName")
-                Log.d("park","resultUri의 사이즈 : ${resultUri.size}")
-                if (resultUri.size == 4) {
-                    if (chipList.size != 0 && chipList.size == 1) {
-                        val data = mapOf(
-                            "img1" to resultUri[0],
-                            "img2" to resultUri[1],
-                            "img3" to resultUri[2],
-                            "img4" to resultUri[3],
-                            "tag1" to chipList[0]
-                        )
-                        Log.d("park","data의 값 : $data")
-                        db?.collection("testFourCut")?.add(data)?.addOnSuccessListener {
-                            Toast.makeText(this,"성공",Toast.LENGTH_SHORT).show()
+        if (chipList.size == 0 ) {
+            Toast.makeText(this,"해쉬태그를 입력해주세요",Toast.LENGTH_SHORT).show()
+        }
+        else {
+            Log.d("park","등록 hashtag 리스트 : $chipList")
+            for (photoUri in uriList) {
+                val splitUri = "${timeStamp}${photoUri.toString().substring(151)}"
+                val imgFileName = "IMAGE.png"
+                val storageRef = storage.reference.child("images")?.child("$splitUri$imgFileName")
+                storageRef?.putFile(photoUri)?.addOnSuccessListener {
+                    Toast.makeText(applicationContext,"image upload",Toast.LENGTH_SHORT).show()
+                    resultUri.add("$splitUri$imgFileName")
+                    Log.d("park","resultUri의 사이즈 : ${resultUri.size}")
+                    if (resultUri.size == 4) {
+                        if (chipList.size != 0 && chipList.size == 1) {
+                            val data = mapOf(
+                                "img1" to resultUri[0],
+                                "img2" to resultUri[1],
+                                "img3" to resultUri[2],
+                                "img4" to resultUri[3],
+                                "tag1" to chipList[0]
+                            )
+                            Log.d("park","data의 값 : $data")
+                            db?.collection("testFourCut")?.add(data)?.addOnSuccessListener {
+                                Toast.makeText(this,"성공",Toast.LENGTH_SHORT).show()
+                            }
+                            chipList.clear()
+                            finish()
                         }
-                        chipList.clear()
-                        finish()
-                    }
-                    else if (chipList.size == 2) {
-                        val data = mapOf(
-                            "img1" to resultUri[0],
-                            "img2" to resultUri[1],
-                            "img3" to resultUri[2],
-                            "img4" to resultUri[3],
-                            "tag1" to chipList[0],
-                            "tag2" to chipList[1]
-                        )
-                        Log.d("park","data의 값 : $data")
-                        db?.collection("testFourCut")?.add(data)?.addOnSuccessListener {
-                            Toast.makeText(this,"성공",Toast.LENGTH_SHORT).show()
+                        else if (chipList.size == 2) {
+                            val data = mapOf(
+                                "img1" to resultUri[0],
+                                "img2" to resultUri[1],
+                                "img3" to resultUri[2],
+                                "img4" to resultUri[3],
+                                "tag1" to chipList[0],
+                                "tag2" to chipList[1]
+                            )
+                            Log.d("park","data의 값 : $data")
+                            db?.collection("testFourCut")?.add(data)?.addOnSuccessListener {
+                                Toast.makeText(this,"성공",Toast.LENGTH_SHORT).show()
+                            }
+                            chipList.clear()
+                            finish()
                         }
-                        chipList.clear()
-                        finish()
-                    }
-                    else if (chipList.size == 3) {
-                        val data = mapOf(
-                            "img1" to resultUri[0],
-                            "img2" to resultUri[1],
-                            "img3" to resultUri[2],
-                            "img4" to resultUri[3],
-                            "tag1" to chipList[0],
-                            "tag2" to chipList[1],
-                            "tag3" to chipList[2]
-                        )
-                        Log.d("park","data의 값 : $data")
-                        db?.collection("testFourCut")?.add(data)?.addOnSuccessListener {
-                            Toast.makeText(this,"성공",Toast.LENGTH_SHORT).show()
+                        else if (chipList.size == 3) {
+                            val data = mapOf(
+                                "img1" to resultUri[0],
+                                "img2" to resultUri[1],
+                                "img3" to resultUri[2],
+                                "img4" to resultUri[3],
+                                "tag1" to chipList[0],
+                                "tag2" to chipList[1],
+                                "tag3" to chipList[2]
+                            )
+                            Log.d("park","data의 값 : $data")
+                            db?.collection("testFourCut")?.add(data)?.addOnSuccessListener {
+                                Toast.makeText(this,"성공",Toast.LENGTH_SHORT).show()
+                            }
+                            chipList.clear()
+                            finish()
                         }
-                        chipList.clear()
-                        finish()
-                    }
-                    else {
-                        Toast.makeText(this,"해쉬태그는 최대 3개 입력 가능합니다.",Toast.LENGTH_LONG).show()
-                        chipList.clear()
-                    }
+                        else {
+                            Toast.makeText(this,"해쉬태그는 최대 3개 입력 가능합니다.",Toast.LENGTH_LONG).show()
+                            chipList.clear()
+                        }
 
 //                        val mainUri = storage.reference.child("images").child(resultUri[0]).downloadUrl
 //                        val photoDto = com.example.walking.model.Photo(hashtag,timeStamp,mainUri.toString())
@@ -149,8 +153,10 @@ class AddFourCutActivity : AppCompatActivity() {
 ////               photoDto.hashtag = hashtag
 //                        db?.collection("Fourcut")?.document()?.set(photoDto)
 
+                    }
                 }
             }
+
         }
 
 //        Log.d("park","resultUri[0] : ${resultUri.size}")
